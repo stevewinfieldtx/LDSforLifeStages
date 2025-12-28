@@ -14,6 +14,7 @@ export default function VerseInterpretationPage() {
   const [showHeaderTitle, setShowHeaderTitle] = useState(false)
   const [isExpanded, setIsExpanded] = useState(false)
   const [hasWaited, setHasWaited] = useState(false)
+  const [showAutismSupport, setShowAutismSupport] = useState(false)
   const mainRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -27,6 +28,17 @@ export default function VerseInterpretationPage() {
     }
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
+
+  // Load profile to check if autism support is enabled
+  useEffect(() => {
+    try {
+      const savedProfile = localStorage.getItem("userProfile")
+      if (savedProfile) {
+        const parsed = JSON.parse(savedProfile)
+        setShowAutismSupport(parsed.diveDeeper?.autismFamily || false)
+      }
+    } catch (e) { /* ignore */ }
   }, [])
 
   // Wait 5 seconds before allowing redirect - gives time for verse to load
@@ -280,6 +292,20 @@ export default function VerseInterpretationPage() {
                 </button>
               )
             })}
+
+            {/* Autism Family Support - 7th button, only shows if enabled in profile */}
+            {showAutismSupport && (
+              <button
+                onClick={() => router.push("/autism-support")}
+                className="group flex flex-col items-start p-4 bg-card rounded-xl border border-border shadow-sm transition-all active:scale-[0.98] hover:shadow-md col-span-2"
+              >
+                <div className="size-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 text-white flex items-center justify-center mb-3">
+                  <span className="material-symbols-outlined">family_restroom</span>
+                </div>
+                <span className="font-bold">Autism Family Support</span>
+                <span className="text-xs text-purple-700 mt-1 text-left font-medium">Reflection for families with autistic loved ones</span>
+              </button>
+            )}
           </div>
         </div>
       </main>
